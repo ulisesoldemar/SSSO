@@ -1,0 +1,18 @@
+.my-custom-scrollbar {
+    position: relative;
+    height: 400px;
+    overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+.table-wrapper-scroll-y thead th {
+    position: sticky;
+    top: 0;
+};
+
+.table-wrapper-scroll-y table {
+    border-collapse: collapse;
+}
