@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paginación Simple</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/scroll.tables.css" rel="stylesheet">
+
+</head>
+
+<body onload="drawMemoryTable();">
+    <nav class="navbar navbar-dark bg-dark justify-content-center">
+        <div class="container-fluid">
+            <h1 class="navbar-brand">Paginación Simple</h1>
+            <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="collapse"
+                data-bs-target="#dropdown" aria-controls="dropdown" aria-expanded="false"
+                aria-label="Toggle navigation">Datos
+            </button>
+            <div class="collapse navbar-collapse" id="dropdown">
+                <div class="row pt-2 g-2 justify-content-center">
+                    <div class="input-group col">
+                        <label class="input-group-text text-dark" for="total-quantum">Quantum</label>
+                        <input type="number" class="form-control" id="total-quantum" placeholder="entre 3 y 6" min="3"
+                            max="6" required>
+                    </div>
+                    <div class="input-group col">
+                        <label class="input-group-text" for="total-process">Total de procesos</label>
+                        <input type="number" class="form-control" id="total-process" placeholder="debe ser al menos uno"
+                            min="1" required>
+                        <button type="button" class="btn btn-success" id="btn-exec" data-bs-toggle="collapse"
+                            data-bs-target="#dropdown" aria-controls="dropdown" aria-expanded="false"
+                            aria-label="Toggle navigation">Ejecutar</button>
+                    </div>
+                </div>
+            </div>
+    </nav>
+    <main>
+        <div class="container-fluid">
+            <div class="row align-items-top g-2">
+                <div class="col-4">
+                    <div class="row m-2">
+                        <div class="h-100 p-2 bg-dark border rounded-3">
+                            <table class="table table-dark table-sm table-bordered text-center">
+                                <tbody id="memory-table">
+                                </tbody>
+                            </table>
+                            <div class="progress" style="height: 2rem;">
+                                <div class="progress-bar bg-secondary" style="width: 100%;">OS</div>
+                                <div class="progress-bar bg-success" style="width: 100%;">En ejecución</div>
+                                <div class="progress-bar bg-info text-dark" style="width: 100%;">Listos</div>
+                                <div class="progress-bar bg-warning text-dark" style="width: 100%;">Bloqueados</div>
+                                <div class="progress-bar bg-light text-dark" style="width: 100%;">Libre</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row m-2">
+                        <div class="h-100 p-2 bg-light border rounded-3 align-middle">
+                            <table class="table table-sm table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" colspan="3">Memoria</th>
+                                        <th scope="col" colspan="2">Tiempo</th>
+                                        <th scope="col" colspan="3">Nuevos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <thead>
+                                        <tr>
+                                            <th>Memoria libre</th>
+                                            <th>Frames libres</th>
+                                            <th>Frames ocupados</th>
+                                            <th>Global</th>
+                                            <th>Quantum</th>
+                                            <th>Total</th>
+                                            <th>ID siguiente</th>
+                                            <th>Tamaño siguiente</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                        <td name="free-memory">-</td>
+                                        <td name="free-frames">-</td>
+                                        <td name="occupied-frames">-</td>
+                                        <td id="global-time">00:00.00</td>
+                                        <td id="quantum-time">-</td>
+                                        <td id="new-processes">0</td>
+                                        <td id="next-process-id">-</td>
+                                        <td id="next-process-size">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <div class="col">
+                            <div class="h-100 p-2 bg-light border rounded-3">
+                                <h4>En ejecución</h4>
+                                <table class="table">
+                                    <tbody id="running-table">
+                                        <tr>
+                                            <th scope="row">ID</th>
+                                            <td id="exec-id" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Operación</th>
+                                            <td id="exec-operation" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tiempo estimado</th>
+                                            <td id="exec-tem" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tiempo de ejecución</th>
+                                            <td id="exec-te" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tiempo restante</th>
+                                            <td id="exec-tr" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Quantum del proceso</th>
+                                            <td id="exec-quantum" class="text-end">-</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Tamaño</th>
+                                            <td id="exec-size" class="text-end">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="h-100 p-2 bg-light border rounded-3">
+                                <h4>Listos</h4>
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar-sm">
+                                    <table class="table text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Tiempo estimado</th>
+                                                <th scope="col">Tiempo de ejecución</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ready-table">
+                                            <!-- Aquí va la información de los procesos listos -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <div class="col">
+                            <div class="h-100 p-2 bg-light border rounded-3">
+                                <h4>Bloqueados</h4>
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar-sm">
+                                    <table class="table text-center" tabindex="0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Tiempo de bloqueo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="locked-table">
+                                            <tr>
+                                                <!-- Aquí irán los procesos bloqueados-->
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="h-100 p-2 bg-light border rounded-3">
+                                <h4>Terminados</h4>
+                                <div class="table-wrapper-scroll-y my-custom-scrollbar-sm">
+                                    <table class="table text-center" tabindex="0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Operación</th>
+                                                <th scope="col">Resultado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="process-table">
+                                            <tr>
+                                                <!-- Aquí irán los procesos terminados-->
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <!-- Mostrar datos de finalización en el modal -->
+                <button type="button" class="btn btn-primary" id="btn-modal" data-bs-toggle="modal"
+                    data-bs-target="#end-modal" disabled="true">
+                    Tabla final
+                </button>
+            </div>
+            <!-- Modal de la tabla final de procesos -->
+            <div class="modal fade" id="end-modal" tabindex="-1" aria-labelledby="end-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="end-modal-label">Información de finalización de los procesos
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                <table class="table table-bordered text-center" tabindex="0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Operación</th>
+                                            <th scope="col">Resultado</th>
+                                            <th scope="col">T. Estimado</th>
+                                            <th scope="col">T. LLegada</th>
+                                            <th scope="col">T. Finalización</th>
+                                            <th scope="col">T. Retorno</th>
+                                            <th scope="col">T. Respuesta</th>
+                                            <th scope="col">T. Espera</th>
+                                            <th scope="col">T. Servicio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="final-table">
+                                        <tr>
+                                            <!-- Aquí irán los procesos al terminar la ejecución -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal de la tabla BCP -->
+            <div class="modal fade" id="bcp-modal" tabindex="-1" aria-labelledby="bcp-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bcp-modal-label">Tabla de BCP</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5 class="modal-title" id="bcp-time"></h5>
+                            <hr>
+                            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                <table class="table table-bordered text-center" tabindex="0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col" colspan="2">Estado</th>
+                                            <th scope="col" colspan="2">Operación</th>
+                                            <th scope="col">T. ME</th>
+                                            <th scope="col">T. Restante</th>
+                                            <th scope="col">T. LLegada</th>
+                                            <th scope="col">T. Finalización</th>
+                                            <th scope="col">T. Retorno</th>
+                                            <th scope="col">T. Espera</th>
+                                            <th scope="col">T. Servicio</th>
+                                            <th scope="col">T. Respuesta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bcp-table">
+                                        <tr>
+                                            <!-- Aquí irán los procesos al terminar la ejecución -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" name="btn-continue"
+                                data-bs-dismiss="modal">Continuar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal de la tabla de páginas -->
+            <div class="modal fade" id="page-modal" tabindex="-1" aria-labelledby="page-modal-label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="page-modal-label">Tabla de Páginas</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-sm table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" colspan="3">Memoria</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <thead>
+                                        <tr>
+                                            <th>Memoria libre</th>
+                                            <th>Frames libres</th>
+                                            <th>Frames ocupados</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                        <td name="free-memory">-</td>
+                                        <td name="free-frames">-</td>
+                                        <td name="occupied-frames">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-sm table-bordered text-center" id="page-table">
+                                <!-- Aquí van las tablas de páginas -->
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" name="btn-continue"
+                                data-bs-dismiss="modal">Continuar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/advanced-timer/src/main.js"></script>
+    <script src="src/process.js"></script>
+    <script src="src/helpers.js"></script>
+    <script src="src/memory.js"></script>
+    <script src="src/app.js"></script>
+</body>
+
+</html>
