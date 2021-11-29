@@ -1,7 +1,7 @@
 # Simulador de planificacion de procesos Sistemas Operativos
 **Planificador de procesos a corto plazo en JavaScript**
 ## ¿Qué es?
-Es un proyecto donde simula un planificador de procesos con los algoritmos siguientes:
+Proyecto donde simula un planificador de procesos con los algoritmos siguientes:
   * Procesamiento por lotes
   * Proceso por lotes con Multiprogramación
   * Round Robin
