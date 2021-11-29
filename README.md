@@ -20,5 +20,5 @@ Para el programa del Productor-Consumidor necesitas tener instalado Python 3.7+ 
 ### Planificador
 1. Simplementa abre el archivo **index.html** con tu navegador.
 ### Productor-Consumidor
-1. Ejecuta el archivo **main.py** dentro de la carpeta **producer_consumer** con el comando 
+1. Ejecuta el archivo **main.py** dentro de la carpeta **producer_consumer**.
 > ```python3 main.py``` en Linux/OSX o ```py main.py``` en versiones modernas de Python en Windows.
