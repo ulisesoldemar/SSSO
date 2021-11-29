@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Algoritmo de planificación FCFS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/scroll.tables.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <header class="navbar navbar-dark bg-dark justify-content-center">
+        <h1 class="navbar-brand">Algoritmo de planificación FCFS</h1>
+    </header>
+    <main>
+        <div class="container-fluid py-2">
+            <div class="input-group col-4 mt-0 mb-2">
+                <label class="input-group-text" for="total-process">Total de procesos</label>
+                <input type="number" class="form-control" id="total-process" placeholder="debe ser al menos uno" min="1"
+                    required>
+                <button type="button" class="btn btn-success" id="btn-exec">Ejecutar</button>
+            </div>
+            <div class="row justify-content-center g-2">
+                <div class="col-3">
+                    <div class="bg-light border rounded-3 text-center pt-2">
+                        <h2 id="global-time">00:00.00</h2>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="bg-light border rounded-3 text-center pt-2">
+                        <h2 id="new-processes">Procesos nuevos: 0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-2 g-2">
+                <div class="col">
+                    <div class="h-100 ps-2 pt-2 bg-light border rounded-3">
+                        <h4>Proceso en ejecución</h4>
+                        <table class="table">
+                            <tbody id="running-table">
+                                <tr>
+                                    <th scope="row">ID</th>
+                                    <td id="exec-id" class="text-end">-</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Operación</th>
+                                    <td id="exec-operation" class="text-end">-</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Tiempo estimado</th>
+                                    <td id="exec-tem" class="text-end">-</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Tiempo de ejecución</th>
+                                    <td id="exec-te" class="text-end">-</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Tiempo restante</th>
+                                    <td id="exec-tr" class="text-end">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="h-100 ps-2 pt-2 bg-light border rounded-3">
+                        <h4>Procesos listos</h4>
+                        <table class="table text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Tiempo estimado</th>
+                                    <th scope="col">Tiempo de ejecución</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ready-table">
+                                <!-- Aquí va la información de los procesos listos -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="h-100 ps-2 pt-2 bg-light border rounded-3">
+                        <h4>Procesos bloqueados</h4>
+                        <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                            <table class="table text-center" tabindex="0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Tiempo de bloqueo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="locked-table">
+                                    <tr>
+                                        <!-- Aquí irán los procesos bloqueados-->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="h-100 ps-2 pt-2 bg-light border rounded-3">
+                        <h4>Procesos terminados</h4>
+                        <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                            <table class="table text-center" tabindex="0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Operación</th>
+                                        <th scope="col">Resultado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="process-table">
+                                    <tr>
+                                        <!-- Aquí irán los procesos terminados-->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-2 g-2">
+                <!-- Mostrar datos de finalización en el modal -->
+                <button type="button" class="btn btn-primary" id="btn-modal" data-bs-toggle="modal"
+                    data-bs-target="#end-modal" disabled="true">
+                    Procesos finalizados
+                </button>
+            </div>
+            <!-- Modal de la tabla final de procesos -->
+            <div class="modal fade" id="end-modal" tabindex="-1" aria-labelledby="end-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="end-modal-label">Información de finalización de los procesos
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                <table class="table table-bordered text-center" tabindex="0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Operación</th>
+                                            <th scope="col">Resultado</th>
+                                            <th scope="col">T. Estimado</th>
+                                            <th scope="col">T. LLegada</th>
+                                            <th scope="col">T. Finalización</th>
+                                            <th scope="col">T. Retorno</th>
+                                            <th scope="col">T. Respuesta</th>
+                                            <th scope="col">T. Espera</th>
+                                            <th scope="col">T. Servicio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="final-table">
+                                        <tr>
+                                            <!-- Aquí irán los procesos al terminar la ejecución -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal de la tabla BCP -->
+            <div class="modal fade" id="bcp-modal" tabindex="-1" aria-labelledby="bcp-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header justify-content-center">
+                            <h5 class="modal-title" id="bcp-modal-label">Tabla de BCP</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-header justify-content-center">
+                            <h5 class="modal-title">Tiempo global:&nbsp;</h5>
+                            <h5 class="modal-title" id="bcp-time">00:00.00</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                                <table class="table table-bordered text-center" tabindex="0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col" colspan="2">Estado</th>
+                                            <th scope="col" colspan="2">Operación</th>
+                                            <th scope="col">T. ME</th>
+                                            <th scope="col">T. Restante</th>
+                                            <th scope="col">T. LLegada</th>
+                                            <th scope="col">T. Finalización</th>
+                                            <th scope="col">T. Retorno</th>
+                                            <th scope="col">T. Espera</th>
+                                            <th scope="col">T. Servicio</th>
+                                            <th scope="col">T. Respuesta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bcp-table">
+                                        <tr>
+                                            <!-- Aquí irán los procesos al terminar la ejecución -->
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btn-continue"
+                                data-bs-dismiss="modal">Continuar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/advanced-timer/src/main.js"></script>
+    <script src="src/process.js"></script>
+    <script src="src/app.js"></script>
+</body>
+
+</html>
